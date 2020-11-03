@@ -9,24 +9,6 @@ class ControllerExtensionModuleMultilangOc3 extends Controller {
 
         $this->document->setTitle($this->language->get('heading_main_title'));
 
-        $data['heading_title'] = $this->language->get('heading_title');
-        $data['text_edit'] = $this->language->get('text_edit');
-
-        $data['entry_meta_title'] = $this->language->get('entry_meta_title');
-        $data['entry_meta_description'] = $this->language->get('entry_meta_description');
-        $data['entry_meta_keyword'] = $this->language->get('entry_meta_keyword');
-        $data['entry_address'] = $this->language->get('entry_address');
-        $data['entry_hreflang'] = $this->language->get('entry_hreflang');
-        $data['entry_language'] = $this->language->get('entry_language');
-
-        $data['tab_data'] = $this->language->get('tab_data');
-        $data['tab_support'] = $this->language->get('tab_support');
-
-        $data['help_hreflang'] = $this->language->get('help_hreflang');
-
-        $data['button_save'] = $this->language->get('button_save');
-        $data['button_cancel'] = $this->language->get('button_cancel');
-
         $this->load->model('setting/setting');
 
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
@@ -34,7 +16,7 @@ class ControllerExtensionModuleMultilangOc3 extends Controller {
 
             $this->session->data['success'] = $this->language->get('text_success');
 
-            $this->response->redirect($this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=module', true));
+            $this->response->redirect($this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=module', true));
         }
 
         if (isset($this->error['code'])) {
@@ -59,18 +41,18 @@ class ControllerExtensionModuleMultilangOc3 extends Controller {
 
         $data['breadcrumbs'][] = array(
             'text'      => $this->language->get('text_home'),
-            'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], true),
+            'href'      => $this->url->link('common/home', 'token=' . $this->session->data['user_token'], true),
             'separator' => false,
         );
 
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get('text_extension'),
-            'href' => $this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=module', true),
+            'href' => $this->url->link('extension/extension', 'token=' . $this->session->data['user_token'] . '&type=module', true),
         );
 
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get('heading_title'),
-            'href' => $this->url->link('extension/module/multilang_oc3', 'token=' . $this->session->data['token'], true),
+            'href' => $this->url->link('extension/module/multilang_oc3', 'token=' . $this->session->data['user_token'], true),
         );
 
         $this->load->model('extension/module/multilang_oc3');
@@ -101,15 +83,39 @@ class ControllerExtensionModuleMultilangOc3 extends Controller {
             $data['multilang_oc3_language'] = '';
         }
 
-        $data['action'] = $this->url->link('extension/module/multilang_oc3', 'token=' . $this->session->data['token'], true);
+        $data['action'] = $this->url->link('extension/module/multilang_oc3', 'user_token=' . $this->session->data['user_token'], true);
 
-        $data['cancel'] = $this->url->link('extension/extension', 'token=' . $this->session->data['token'], true);
+        $data['cancel'] = $this->url->link('extension/extension', 'user_token=' . $this->session->data['user_token'] . '&type=module', true);
 
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');
         $data['footer'] = $this->load->controller('common/footer');
 
         $this->response->setOutput($this->load->view('extension/module/multilang_oc3', $data));
+    }
+
+    public function install() {
+        $this->load->model('extension/module/multilang_oc3');
+
+        $this->model_user_user_group->addPermission($this->user->getId(), 'access', 'extension/module/multilang_oc3');
+        $this->model_user_user_group->addPermission($this->user->getId(), 'modify', 'extension/module/multilang_oc3');
+
+        $this->model_extension_module_multilang_oc3->makeDB();
+
+        if (!in_array('multilang_oc3', $this->model_setting_extension->getInstalled('module'))) {
+            $this->model_setting_extension->install('module', 'multilang_oc3');
+        }
+
+        $this->session->data['success'] = $this->language->get('text_success_installed');
+    }
+
+    public function uninstall() {
+        $this->load->model('extension/module/multilang_oc3');
+
+        $this->model_extension_module_multilang_oc3->removeDB();
+
+        $this->model_setting_extension->uninstall('module', 'multilang_oc3');
+        $this->model_setting_setting->deleteSetting('multilang_oc3_data');
     }
 
     private function validate() {

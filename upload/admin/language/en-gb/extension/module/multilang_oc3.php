@@ -6,6 +6,7 @@ $_['heading_main_title'] = 'Multilang OC 3';
 // Text
 $_['text_extension'] = 'Extensions';
 $_['text_success'] = 'Success: You have modified this module!';
+$_['text_success_installed'] = 'Success: You have installed this module!';
 $_['text_edit'] = 'Edit this Module';
 
 // Tab
