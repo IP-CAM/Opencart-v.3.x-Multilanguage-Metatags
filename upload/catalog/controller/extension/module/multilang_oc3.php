@@ -25,8 +25,6 @@ class ControllerExtensionModuleMultilangOc3 extends Controller {
 
             unset($url_data['route']);
 
-            $url = '';
-
             if ($url_data) {
                 $url = '&' . urldecode(http_build_query($url_data, '', '&'));
             }

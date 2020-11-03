@@ -5,6 +5,70 @@
     <version>1.0</version>
     <author>eapdob</author>
     <link>eapdob@gmail.com</link>
+    <file path="admin/language/*/localisation/language.php">
+        <operation>
+            <search><![CDATA[$_['column_sort_order']]]></search>
+            <add position="before"><![CDATA[$_['column_url'] = 'URL prefix';]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[$_['entry_locale']]]></search>
+            <add position="before"><![CDATA[$_['entry_url'] = 'URL prefix';]]></add>
+        </operation>
+    </file>
+    <file path="admin/language/ru-ru/localisation/language.php">
+        <operation>
+            <search><![CDATA[$_['error_locale']]]></search>
+            <add position="before"><![CDATA[$_['error_url'] = 'Префикс языка должен быть от 2 до 32 символов!';]]></add>
+        </operation>
+    </file>
+    <file path="admin/language/en-gb/localisation/language.php">
+        <operation>
+            <search><![CDATA[$_['error_locale']]]></search>
+            <add position="before"><![CDATA[$_['error_url'] = 'Url prefix must be between 2 and 32 characters!';]]></add>
+        </operation>
+    </file>
+    <file path="admin/model/localisation/language.php">
+        <operation>
+            <search><![CDATA[locale =]]></search>
+            <add position="replace"><![CDATA[url = '" . $this->db->escape($data['url']) . "', locale =]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[$sort_data = array(]]></search>
+            <add position="after"><![CDATA['url',]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/localisation/language_list.twig">
+        <operation>
+            <search><![CDATA[<td class="text-right">{% if sort == 'sort_order' %}]]></search>
+            <add position="before"><![CDATA[
+              <td class="text-left">{% if (sort == 'url') %}
+                <a href="{{ sort_url }}" class="{{ order|lower }}">{{ column_url }}</a>
+                {% else %}
+                <a href="{{ sort_url }}">{{ column_url }}</a>
+                {% endif %}</td>
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[<td class="text-left">{{ language.code }}</td>]]></search>
+            <add position="after"><![CDATA[<td class="text-left">{{ language.url }}</td>]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/localisation/language_form.twig">
+        <operation>
+            <search><![CDATA[<div class="text-danger">{{ error_code }}</div>]]></search>
+            <add position="after" offset="3"><![CDATA[
+            <div class="form-group required">
+                <label class="col-sm-2 control-label required" for="input-url">{{ entry_url }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="url" value="{{ url }}" placeholder="{{ entry_url }}" id="input-url" class="form-control" />
+                  {% if (error_url) %}
+                  <div class="text-danger">{{ error_url }}</div>
+                  {% endif %}
+                </div>
+            </div>
+            ]]></add>
+        </operation>
+    </file>
     <file name="catalog/controller/common/header.php">
         <operation>
             <search><![CDATA[$data['language'] = $this->load->controller('common/language');]]></search>
@@ -88,70 +152,6 @@
             <search><![CDATA[$data['sort_code']]]></search>
             <add position="before"><![CDATA[
             $data['sort_url'] = $this->url->link('localisation/language', 'token=' . $this->session->data['token'] . '&sort=url' . $url, true);
-            ]]></add>
-        </operation>
-    </file>
-    <file path="admin/language/*/localisation/language.php">
-        <operation>
-            <search><![CDATA[$_['column_sort_order']]]></search>
-            <add position="before"><![CDATA[$_['column_url'] = 'URL prefix';]]></add>
-        </operation>
-        <operation>
-            <search><![CDATA[$_['entry_locale']]]></search>
-            <add position="before"><![CDATA[$_['entry_url'] = 'URL prefix';]]></add>
-        </operation>
-    </file>
-    <file path="admin/language/ru-ru/localisation/language.php">
-        <operation>
-            <search><![CDATA[$_['error_locale']]]></search>
-            <add position="before"><![CDATA[$_['error_url'] = 'Префикс языка должен быть от 2 до 32 символов!';]]></add>
-        </operation>
-    </file>
-    <file path="admin/language/en-gb/localisation/language.php">
-        <operation>
-            <search><![CDATA[$_['error_locale']]]></search>
-            <add position="before"><![CDATA[$_['error_url'] = 'Url prefix must be between 2 and 32 characters!';]]></add>
-        </operation>
-    </file>
-    <file path="admin/model/localisation/language.php">
-        <operation>
-            <search><![CDATA[locale =]]></search>
-            <add position="replace"><![CDATA[url = '" . $this->db->escape($data['url']) . "', locale =]]></add>
-        </operation>
-        <operation>
-            <search><![CDATA[$sort_data = array(]]></search>
-            <add position="after"><![CDATA['url',]]></add>
-        </operation>
-    </file>
-    <file path="admin/view/template/localisation/language_list.twig">
-        <operation>
-            <search><![CDATA[<td class="text-right">{% if sort == 'sort_order' %}]]></search>
-            <add position="before"><![CDATA[
-              <td class="text-left">{% if (sort == 'url') %}
-                <a href="{{ sort_url }}" class="{{ order|lower }}">{{ column_url }}</a>
-                {% else %}
-                <a href="{{ sort_url }}">{{ column_url }}</a>
-                {% endif %}</td>
-            ]]></add>
-        </operation>
-        <operation>
-            <search><![CDATA[<td class="text-left"><?php echo $language['code']; ?></td>]]></search>
-            <add position="after"><![CDATA[<td class="text-left"><?php echo $language['url']; ?></td>]]></add>
-        </operation>
-    </file>
-    <file path="admin/view/template/localisation/language_form.twig">
-        <operation>
-            <search><![CDATA[<div class="text-danger">{{ error_code }}</div>]]></search>
-            <add position="after" offset="3"><![CDATA[
-            <div class="form-group required">
-                <label class="col-sm-2 control-label required" for="input-url">{{ entry_url }}</label>
-                <div class="col-sm-10">
-                  <input type="text" name="url" value="{{ url }}" placeholder="{{ entry_url }}" id="input-url" class="form-control" />
-                  {% if (error_url) %}
-                  <div class="text-danger">{{ error_url }}</div>
-                  {% endif %}
-                </div>
-            </div>
             ]]></add>
         </operation>
     </file>
@@ -296,34 +296,7 @@
     </file>
     <file path="system/library/seopro.php">
         <operation>
-            <search><![CDATA[private $categories;]]></search>
-            <add position="after"><![CDATA[
-            private $languages = array();
-            private $config_language_id;
-            private $config_language;
-            private $config_language_url;
-            ]]></add>
-        </operation>
-        <operation>
-            <search><![CDATA[$this->cache = $registry->get('cache');]]></search>
-            <add position="after"><![CDATA[
-            $this->config_language_id = $this->config->get('multilang_oc3_language');
-            $this->config_language = $this->config->get('config_language');
-
-            $language_data = $this->db->query("SELECT `url` FROM `" . DB_PREFIX . "language` WHERE `language_id` = '"
-                . $this->config_language_id . "'");
-
-            $this->config_language_url = $language_data->row['url'];
-
-            $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "language WHERE status = '1'");
-
-            foreach ($query->rows as $result) {
-                $this->languages[$result['url']] = $result;
-            }
-            ]]></add>
-        </operation>
-        <operation>
-            <search><![CDATA[public function detectLanguage() {]]></search>
+            <search><![CDATA[private function detectLanguage() {]]></search>
             <add position="after"><![CDATA[
 
                 $this->detectAjax();
@@ -389,12 +362,12 @@
             <add position="before"><![CDATA[$url .= $languageSlug . 'index.php?route=' . $route;]]></add>
         </operation>
         <operation>
-            <search><![CDATA[$seo_url = trim($seo_url, '/');]]></search>
-            <add position="replace"><![CDATA[$seo_url = $languageSlug . trim($seo_url, '/');]]></add>
+            <search><![CDATA[$url = '/' . rawurlencode($keyword);]]></search>
+            <add position="replace"><![CDATA[$url = $languageSlug . rawurlencode($keyword);]]></add>
         </operation>
         <operation>
-            <search><![CDATA[public function validate() {]]></search>
-            <add position="after"><![CDATA[
+            <search><![CDATA[if (isset($this->request->get['route'])) {]]></search>
+            <add position="before" offset="1"><![CDATA[
             if (isset($this->request->get['route']) && preg_match('~^api/~',$this->request->get['route'])) {
                 return;
             }
@@ -402,6 +375,33 @@
         </operation>
     </file>
     <file name="catalog/controller/startup/seo_url.php">
+        <operation>
+            <search><![CDATA[class ControllerStartupSeoUrl extends Controller {]]></search>
+            <add position="after"><![CDATA[
+            private $languages = array();
+            private $config_language_id;
+            private $config_language;
+            private $config_language_url;
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[$this->seo_pro = new SeoPro($registry);]]></search>
+            <add position="after"><![CDATA[
+            $this->config_language_id = $this->config->get('multilang_oc3_language');
+            $this->config_language = $this->config->get('config_language');
+
+            $language_data = $this->db->query("SELECT `url` FROM `" . DB_PREFIX . "language` WHERE `language_id` = '"
+                . $this->config_language_id . "'");
+
+            $this->config_language_url = $language_data->row['url'];
+
+            $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "language WHERE status = '1'");
+
+            foreach ($query->rows as $result) {
+                $this->languages[$result['url']] = $result;
+            }
+            ]]></add>
+        </operation>
         <operation>
             <search><![CDATA[public function rewrite($link) {]]></search>
             <add position="after"><![CDATA[
