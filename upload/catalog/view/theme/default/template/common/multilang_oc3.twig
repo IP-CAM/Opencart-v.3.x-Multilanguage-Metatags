@@ -1,0 +1,28 @@
+{% if (count(languages) > 1) %}
+    <div id="multilang_oc3" class="pull-left">
+        <div class="btn-group">
+            <button class="btn btn-link dropdown-toggle" data-toggle="dropdown">
+                {% for language in languages %}
+                    {% if (language['code'] == code) %}
+                        <img src="catalog/language/{{ language['code'] }}/{{ language['code'] }}.png" alt="{{ language['name'] }}" title="{{ language['name'] }}">
+                    {% endif %}
+                {% endfor %}
+                <span class="hidden-xs hidden-sm hidden-md">{{ text_language }}</span>
+                <i class="fa fa-caret-down"></i></button>
+            <ul class="dropdown-menu">
+                {% for language in languages %}
+                    <li>
+                        <a data-href="{{ language['href_lang'] }}" class="btn btn-link btn-block" href="{{ language['href'] }}">
+                            <img src="catalog/language/{{ language['code'] }}/{{ language['code'] }}.png" alt="{{ language['name'] }}"
+                                 title="{{ language['name'] }}"/>
+                            {{ language['name'] }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <script>
+            $('#multilang_oc3 a').each(function (e) {
+                $(this).attr('href', $(this).attr('data-href'));
+            });
+        </script>
+    </div>
+{% endif %}
