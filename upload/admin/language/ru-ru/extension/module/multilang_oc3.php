@@ -1,6 +1,6 @@
 <?php
 // Heading
-$_[ 'Heading_title'] = '<span style = "color:#009aff;">Multilang OC 3</span>';
+$_['heading_title'] = '<span style = "color:#009aff;">Multilang OC 3</span>';
 $_['heading_main_title'] = 'Multilang OC 3';
 
 // Text

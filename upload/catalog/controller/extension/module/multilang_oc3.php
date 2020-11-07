@@ -3,7 +3,7 @@
 class ControllerExtensionModuleMultilangOc3 extends Controller {
 
     public function index() {
-        $this->load->model('extension/module/ocd_multilang');
+        $this->load->model('extension/module/multilang_oc3');
 
         $languages = $this->model_extension_module_multilang_oc3->getLanguages();
 

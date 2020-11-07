@@ -8,7 +8,7 @@ class ModelExtensionModuleMultilangOc3 extends Model {
 
     }
 
-    public function removeDB() {
+    public function alterDB() {
         $sql = "ALTER TABLE `" . DB_PREFIX . "language` DROP COLUMN `url`";
         $this->db->query($sql);
     }

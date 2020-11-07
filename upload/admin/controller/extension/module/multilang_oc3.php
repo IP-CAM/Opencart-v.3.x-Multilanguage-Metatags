@@ -1,7 +1,6 @@
 <?php
 
 class ControllerExtensionModuleMultilangOc3 extends Controller {
-
     private $error = array();
 
     public function index() {
@@ -59,14 +58,6 @@ class ControllerExtensionModuleMultilangOc3 extends Controller {
 
         $data['languages'] = $this->model_extension_module_multilang_oc3->getLanguages();
 
-        if (isset($this->request->post['multilang_oc3_data'])) {
-            $data['multilang_oc3_data'] = $this->request->post['multilang_oc3_data'];
-        } elseif ($this->config->get('multilang_oc3_data')) {
-            $data['multilang_oc3_data'] = $this->config->get('multilang_oc3_data');
-        } else {
-            $data['multilang_oc3_data'] = array();
-        }
-
         if (isset($this->request->post['multilang_oc3_code'])) {
             $data['multilang_oc3_code'] = $this->request->post['multilang_oc3_code'];
         } elseif ($this->config->get('multilang_oc3_code')) {
@@ -95,6 +86,10 @@ class ControllerExtensionModuleMultilangOc3 extends Controller {
     }
 
     public function install() {
+        $this->load->language('extension/module/multilang_oc3');
+
+        $this->load->model('setting/setting');
+        $this->load->model('user/user_group');
         $this->load->model('extension/module/multilang_oc3');
 
         $this->model_user_user_group->addPermission($this->user->getId(), 'access', 'extension/module/multilang_oc3');
@@ -102,20 +97,29 @@ class ControllerExtensionModuleMultilangOc3 extends Controller {
 
         $this->model_extension_module_multilang_oc3->makeDB();
 
+        $this->model_setting_setting->editSetting('multilang_oc3', array(
+            'multilang_oc3_code' => array(),
+            'multilang_oc3_language' => ''
+        ));
+
         if (!in_array('multilang_oc3', $this->model_setting_extension->getInstalled('module'))) {
             $this->model_setting_extension->install('module', 'multilang_oc3');
         }
 
         $this->session->data['success'] = $this->language->get('text_success_installed');
+
+        $this->response->redirect($this->url->link('extension/module/multilang_oc3', 'user_token=' . $this->session->data['user_token'], true));
     }
 
     public function uninstall() {
+        $this->load->model('setting/setting');
+        $this->load->model('setting/extension');
         $this->load->model('extension/module/multilang_oc3');
 
-        $this->model_extension_module_multilang_oc3->removeDB();
+        $this->model_extension_module_multilang_oc3->alterDB();
 
         $this->model_setting_extension->uninstall('module', 'multilang_oc3');
-        $this->model_setting_setting->deleteSetting('multilang_oc3_data');
+        $this->model_setting_setting->deleteSetting('multilang_oc3');
     }
 
     private function validate() {

@@ -3,9 +3,11 @@
     <div class="page-header">
         <div class="container-fluid">
             <div class="pull-right">
-                <button type="submit" form="form_multilang_oc3" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+                <button type="submit" form="form_multilang_oc3" data-toggle="tooltip" title="{{ button_save }}"
+                        class="btn btn-primary">
                     <i class="fa fa-save"></i></button>
-                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i
+                            class="fa fa-reply"></i></a>
             </div>
             <h1>{{ heading_title }}</h1>
             <ul class="breadcrumb">
@@ -16,32 +18,45 @@
         </div>
     </div>
     <div class="container-fluid">
-        {% if (error_warning) %}
+        {% if error_warning %}
             <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
             </div>
         {% endif %}
+        {% if warning %}
+            <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success %}
+        <div class="alert alert-success"><i class="fa fa-exclamation-circle"></i> {{ success }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
             </div>
             <div class="panel-body">
-                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form_multilang_oc3" class="form-horizontal">
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form_multilang_oc3"
+                      class="form-horizontal">
                     <ul class="nav nav-tabs">
                         <li class="active"><a href="#tab-data" data-toggle="tab">{{ tab_data }}</a></li>
-                        <li><a href="#tab-support" data-toggle="tab">{{ tab_support }}</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab-data">
                             <div class="form-group">
-                                <label class="col-sm-2 control-label" for="input-title"><span data-toggle="tooltip" title="{{ help_hreflang }}">{{ entry_hreflang }}</span></label>
+                                <label class="col-sm-2 control-label" for="input-title"><span data-toggle="tooltip"
+                                                                                              title="{{ help_hreflang }}">{{ entry_hreflang }}</span></label>
                                 <div class="col-sm-10">
                                     {% for language in languages %}
                                         <div class="input-group">
 										<span class="input-group-addon">
-											<img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}"/>
+											<img src="language/{{ language['code'] }}/{{ language['code'] }}.png"
+                                                 title="{{ language['name'] }}"/>
 										</span>
-                                            <input type="text" class="form-control" name="multilang_oc3_code[{{ language['language_id'] }}]" id="input-hreflang"
+                                            <input type="text" class="form-control"
+                                                   name="multilang_oc3_code[{{ language['language_id'] }}]"
+                                                   id="input-hreflang"
                                                    value="{{ multilang_oc3_code ? multilang_oc3_code[language['language_id']] : '' }}"/>
                                             {% if (error_code) %}
                                                 <div class="text-danger">{{ error_code[language['language_id']] }}</div>
@@ -56,7 +71,8 @@
                                     <select name="multilang_oc3_language" id="input-language" class="form-control">
                                         {% for language in languages %}
                                             {% if (language['language_id'] == multilang_oc3_language) %}
-                                                <option value="{{ language['language_id'] }}" selected="selected">{{ language['name'] }}</option>
+                                                <option value="{{ language['language_id'] }}"
+                                                        selected="selected">{{ language['name'] }}</option>
                                             {% else %}
                                                 <option value="{{ language['language_id'] }}">{{ language['name'] }}</option>
                                             {% endif %}
@@ -67,45 +83,6 @@
                                     {% endif %}
                                 </div>
                             </div>
-                            <div id="content-language">
-                                <ul class="nav nav-tabs">
-                                    {% for language in languages %}
-                                        <li>
-                                            <a href="#language{{ language['language_id'] }}" data-toggle="tab"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}"/> {{ language['name'] }}
-                                            </a></li>
-                                    {% endfor %}
-                                </ul>
-                                <div class="tab-content">
-                                    {% for language in languages %}
-                                        <div class="tab-pane" id="language{{ language['language_id'] }}">
-                                            <div class="form-group">
-                                                <label class="col-sm-2 control-label" for="input-meta-title[{{ language['language_id'] }}]">{{ entry_meta_title }}</label>
-                                                <div class="col-sm-10">
-                                                    <input type="text" name="multilang_oc3_data[{{ language['language_id'] }}][meta_title]" value="{{ multilang_oc3_data[language['language_id']] is defined ? multilang_oc3_data[language['language_id']]['meta_title'] : '' }}" placeholder="{{ entry_meta_title }}" id="input-meta-title[{{ language['language_id'] }}]" class="form-control"/>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-sm-2 control-label" for="input-meta-description{{ language['language_id'] }}">{{ entry_meta_description }}</label>
-                                                <div class="col-sm-10">
-                                                    <textarea name="multilang_oc3_data[{{ language['language_id'] }}][meta_description]" rows="5" placeholder="{{ entry_meta_description }}" id="input-meta-description{{ language['language_id'] }}" class="form-control">{{ multilang_oc3_data[language['language_id']] is defined ? multilang_oc3_data[language['language_id']]['meta_description'] : '' }}</textarea>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-sm-2 control-label" for="input-meta-keyword{{ language['language_id'] }}">{{ entry_meta_keyword }}</label>
-                                                <div class="col-sm-10">
-                                                    <textarea name="multilang_oc3_data[{{ language['language_id'] }}][meta_keyword]" rows="5" placeholder="{{ entry_meta_keyword }}" id="input-meta-keyword{{ language['language_id'] }}" class="form-control">{{ multilang_oc3_data[language['language_id']] is defined ? multilang_oc3_data[language['language_id']]['meta_keyword'] : '' }}</textarea>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-sm-2 control-label" for="input-address{{ language['language_id'] }}">{{ entry_address }}</label>
-                                                <div class="col-sm-10">
-                                                    <textarea name="multilang_oc3_data[{{ language['language_id'] }}][address]" rows="5" placeholder="{{ entry_address }}" id="input-address{{ language['language_id'] }}" class="form-control">{{ multilang_oc3_data[language['language_id']] is defined ? multilang_oc3_data[language['language_id']]['address'] : '' }}</textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </form>
@@ -113,7 +90,4 @@
         </div>
     </div>
 </div>
-<script>
-    $('#content-language a:first').tab('show');
-</script>
 {{ footer }}
