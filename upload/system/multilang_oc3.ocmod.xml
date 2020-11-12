@@ -258,7 +258,7 @@
             ]]></add>
         </operation>
         <operation>
-            <search index="3"><![CDATA[if($this->config->get('config_seo_pro'))]]></search>
+            <search index="2"><![CDATA[if($this->config->get('config_seo_pro'))]]></search>
             <add position="replace"><![CDATA[//if($this->config->get('config_seo_pro'))]]></add>
         </operation>
         <operation>
@@ -284,15 +284,15 @@
                 private $languages = array();
                 private $config_language_id;
                 private $config_language;
-                private $config_language_url;
+                public $config_language_url;
                 /* END Multilang OC 3 */
             ]]></add>
         </operation>
         <operation>
-            <search><![CDATA[if ($this->config->get('config_seo_url_cache')) {]]></search>
-            <add position="before"><![CDATA[
+            <search><![CDATA[$this->cache = $registry->get('cache');]]></search>
+            <add position="after"><![CDATA[
                 /* Multilang OC 3 */
-                $this->config_language_id = $this->config->get('ochelp_multilang_language');
+                $this->config_language_id = $this->config->get('multilang_oc3_language');
                 $this->config_language = $this->config->get('config_language');
 
                 $language_data = $this->db->query("SELECT `url` FROM `" . DB_PREFIX . "language` WHERE `language_id` = '"
@@ -306,19 +306,8 @@
                     $this->languages[$result['url']] = $result;
                 }
                 /* END Multilang OC 3 */
-            ]]></add>
-        </operation>
-        <operation>
-            <search><![CDATA[private function detectLanguage() {]]></search>
-            <add position="replace"><![CDATA[
-                private function detectLanguage() {
 
-                    $this->detectAjax();
-
-                    if ($this->ajax)
-                        return;
-
-                    /* Multilang OC 3 */
+                /* Multilang OC 3 */
                     $languageSlug = null;
 
                     if (isset($this->request->cookie['language_url'])) {
@@ -387,6 +376,18 @@
 
                     $this->registry->set('language', $language);
                     /* END Multilang OC 3 */
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[private function detectLanguage() {]]></search>
+            <add position="replace"><![CDATA[
+                private function detectLanguage() {
+
+                    $this->detectAjax();
+
+                    if ($this->ajax)
+                        return;
+
                 }
 
                 private function detectLanguage_old() {
@@ -396,7 +397,7 @@
             <search><![CDATA[public function baseRewrite($data, $language_id) {]]></search>
             <add position="replace"><![CDATA[
                 /* Multilang OC 3 */
-                public function baseRewrite($data, $language_id, $languageSlug = '') {
+                public function baseRewrite($data, $languageSlug = '') {
                     if (!$languageSlug) {
                         $languageSlug = $this->session->data['language_url'];
                     }
@@ -414,26 +415,7 @@
             <add position="before"><![CDATA[
                 /* Multilang OC 3 */
                 case 'common/home':
-                    if ($component['scheme'] == 'https') {
-                        $url = $this->config->get('config_ssl');
-                    } else {
-                        $url = $this->config->get('config_url');
-                    }
-                    if ($languageSlug != $this->config_language_url . '/') {
-                        $url .= $languageSlug;
-                    }
-                    if (isset($this->cache_data['queries']['common/home'])) {
-                        $url .= $this->cache_data['queries']['common/home'];
-                    }
-
-                    $allowed_parameters = $this->valide_get_param;
-                    foreach ($allowed_parameters as $ap) {
-                        if (isset($data[trim($ap)])) {
-                            $url .= '?' . urldecode(http_build_query($data, '', '&amp;'));
-                        }
-                    }
-
-                    /*$route = 'common/home';
+                    $route = 'common/home';
 
                     if ($this->valide_get_param) {
                         $valide_get_param_data = [];
@@ -450,11 +432,7 @@
 
 				    if ($this->valide_get_param) {
                         $data = array_merge($data, $valide_get_param_data);
-                    }*/
-
-                    // Return clean shop link with any GET-parameters stripped off
-                    return [$url, $data, $postfix];
-                    // (if you want to pass all parameters on homepage as is, comment the line above: `// return $link;`)
+                    }
 
                     break;
                 /* END Multilang OC 3 */
@@ -464,7 +442,11 @@
             <search><![CDATA[$url = '';]]></search>
             <add position="replace"><![CDATA[
                 /* Multilang OC 3 */
-                $url = '' . $languageSlug;
+                if ($languageSlug !== '') {
+                    $url = '/' . $languageSlug;
+                } else {
+                    $url = '';
+                }
                 /* END Multilang OC 3 */
             ]]></add>
         </operation>
@@ -472,7 +454,11 @@
             <search><![CDATA[if (!empty($rows) && (count($rows) == count($queries))) {]]></search>
             <add position="before"><![CDATA[
                 /* Multilang OC 3 */
-                $url .= $languageSlug;
+                if ($languageSlug !== '') {
+                    $url = '/' . $languageSlug;
+                } else {
+                    $url = '';
+                }
                 /* END Multilang OC 3 */
             ]]></add>
         </operation>
@@ -484,6 +470,28 @@
                     return;
                 }
                 /* END Multilang OC 3 */
+            ]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/startup/seo_url.php">
+        <operation>
+            <search><![CDATA[list($url, $data, $postfix) =  $this->seo_pro->baseRewrite($data, (int)$this->config->get('config_language_id'));]]></search>
+            <add position="replace"><![CDATA[
+            /* Multilang OC 3 */
+            list($url, $data, $postfix) =  $this->seo_pro->baseRewrite($data, $this->session->data['language_url']);
+            /* END Multilang OC 3 */
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[return $link;]]></search>
+            <add position="before"><![CDATA[
+            /* Multilang OC 3 */
+            if ($url === null) {
+                $link_replace = $url_info['scheme'] . '://' . $url_info['host'] . (isset($url_info['port']) ? ':' . $url_info['port'] : '') . '/';
+                $link_second_part = str_replace($link_replace, '',  $link);
+                $link = $link_replace . $this->session->data['language_url'] . '/' . $link_second_part;
+            }
+            /* END Multilang OC 3 */
             ]]></add>
         </operation>
     </file>
